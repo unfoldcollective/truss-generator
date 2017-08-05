@@ -37,6 +37,10 @@ function setup() {
 
 function draw() {
     background(0);
+    
+    rotateY(map(mouseX, 0, width, 0, 2 * Math.PI));
+    rotateX(map(mouseY, 0, height, 0, 2 * Math.PI));
+    
     drawRoof();
 }
 
@@ -44,22 +48,39 @@ function drawRoof() {
     var origin = {
         x: - truss_width * 0.5,
         y: truss_height * 0.5,
-        z: - truss_length * (2/3),
+        z: - truss_length,
     };
 
     _.range(0, truss_length, truss_step)
-        .map(function(value) {
-            drawTruss(origin, value);
-            return value;
+        .map(function(offset_z, index, array) {
+            drawTruss(origin, offset_z, index/array.length);
+            return offset_z;
         });
 }
 
-function drawTruss(origin, offset_z) {
+function drawTruss(origin, offset_z, ratio) {
+    this_truss_top_ratio = Math.sin(ratio * 2 * Math.PI);
     beginShape();
-        vertex(origin.x,origin.y,origin.z + offset_z);             // lower left
-        vertex(origin.x+truss_width,origin.y,origin.z + offset_z); // lower right
-        vertex(origin.x+truss_width*truss_top_ratio,origin.y-truss_height,origin.z + offset_z); // top
-        vertex(origin.x,origin.y,origin.z + offset_z);             // lower left
+        vertex( // lower left
+            origin.x,
+            origin.y,
+            origin.z + offset_z
+        );
+        vertex( // lower right
+            origin.x + truss_width,
+            origin.y,
+            origin.z + offset_z
+        );
+        vertex( // top
+            origin.x + truss_width * this_truss_top_ratio,
+            origin.y - truss_height,
+            origin.z + offset_z
+        );
+        vertex( // lower left
+            origin.x,
+            origin.y,
+            origin.z + offset_z
+        );
     endShape();
     
 }
