@@ -1,6 +1,6 @@
 var gui;
 
-var truss_width         = 200;
+var truss_width         = 300;
 var truss_widthMin      = -200;
 var truss_widthMax      = 1000;
 var truss_widthStep     = 1;
@@ -37,8 +37,8 @@ function setup() {
 function draw() {
     background(0);
     
-    rotateZ(map(mouseX, 0, width, -Math.PI, Math.PI));
-    rotateX(map(mouseY, 0, height, -Math.PI, Math.PI));
+    rotateZ(map(mouseX, 0, width, -0.5 * Math.PI, 0.5 * Math.PI));
+    rotateX(map(mouseY, 0, height, -0.5 * Math.PI, 0.5 * Math.PI));
     
     drawRoof();
 }
@@ -46,7 +46,7 @@ function draw() {
 function drawRoof() {
     var origin = {
         x: - truss_width * 0.5,
-        y: truss_height * 0.5,
+        y: truss_height * 1,
         z: - truss_length * 0.5,
     };
 
