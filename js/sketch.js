@@ -10,7 +10,7 @@ var truss_lengthMax     = 3000;
 var truss_lengthStep    = 10;
 var truss_height        = 250;
 var truss_heightMin     = -250;
-var truss_heightMax     = 250;
+var truss_heightMax     = 500;
 var truss_heightStep    = 1;
 var truss_top_ratio     = 0.5;
 var truss_top_ratioMin  = -1;
@@ -22,7 +22,6 @@ var truss_stepMax       = 1000;
 var truss_stepStep      = 10;
 
 function setup() {
-    console.log('hello')
     createCanvas(windowWidth, windowHeight, WEBGL);
     fill(255);
     gui  = createGui('Truss');
@@ -38,8 +37,8 @@ function setup() {
 function draw() {
     background(0);
     
-    rotateY(map(mouseX, 0, width, 0, 2 * Math.PI));
-    rotateX(map(mouseY, 0, height, 0, 2 * Math.PI));
+    rotateZ(map(mouseX, 0, width, -Math.PI, Math.PI));
+    rotateX(map(mouseY, 0, height, -Math.PI, Math.PI));
     
     drawRoof();
 }
@@ -48,7 +47,7 @@ function drawRoof() {
     var origin = {
         x: - truss_width * 0.5,
         y: truss_height * 0.5,
-        z: - truss_length,
+        z: - truss_length * 0.5,
     };
 
     _.range(0, truss_length, truss_step)
@@ -59,7 +58,9 @@ function drawRoof() {
 }
 
 function drawTruss(origin, offset_z, ratio) {
-    this_truss_top_ratio = Math.sin(ratio * 2 * Math.PI);
+    this_truss_top_ratio = Math.cos(ratio * 2 * Math.PI);
+    this_truss_top_ratio = map(this_truss_top_ratio, -1, 1, 0, 1);
+
     beginShape();
         vertex( // lower left
             origin.x,
@@ -82,7 +83,10 @@ function drawTruss(origin, offset_z, ratio) {
             origin.z + offset_z
         );
     endShape();
-    
+
+    fill(0,255,0);
+    sphere(5);
+    fill(255);
 }
 // event handlers
 
