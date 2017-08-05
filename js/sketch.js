@@ -25,18 +25,13 @@ function setup() {
     console.log('hello')
     createCanvas(windowWidth, windowHeight, WEBGL);
     fill(255);
-
-    // truss_width     = 200;
-    // truss_length    = 1500,
-    // truss_height    = 250,
-    // truss_top_ratio = 0.5,
-
     gui  = createGui('Truss');
     gui.addGlobals(
         'truss_width',
         'truss_length',
         'truss_height',
         'truss_top_ratio',
+        'truss_step',
     );
 }
 
@@ -51,11 +46,8 @@ function drawRoof() {
         y: truss_height * 0.5,
         z: - truss_length * (2/3),
     };
-    
-    // drawTruss(origin, 0);    
-    // drawTruss(origin, 50);
 
-    _.range(0, truss_length, 100)
+    _.range(0, truss_length, truss_step)
         .map(function(value) {
             drawTruss(origin, value);
             return value;
