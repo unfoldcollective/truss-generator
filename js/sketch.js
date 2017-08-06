@@ -61,7 +61,7 @@ function draw() {
     sphere(5);
     fill(255);
     
-    rotateZ(map(mouseDrag.x, -0.5 * width, 0.5 * width, -0.5 * Math.PI, 0.5 * Math.PI));
+    rotateY(map(mouseDrag.x, -0.5 * width, 0.5 * width, -0.5 * Math.PI, 0.5 * Math.PI));
     rotateX(map(mouseDrag.y, -0.5 * height, 0.5 * height, -0.5 * Math.PI, 0.5 * Math.PI));
     
     drawRoof();
@@ -71,7 +71,8 @@ function drawRoof() {
     _.range(0, roof_length, truss_step)
         .map(function(offset_z, index, array) {
             return {
-                vertex_lists: calcTrussVertexLists(index/array.length),
+                vertex_lists: calcTrussVertexLists_german(index/array.length),
+                // vertex_lists: calcTrussVertexLists_triangle(index/array.length),
                 offset_z: offset_z,
             };
         })
@@ -90,7 +91,7 @@ function drawRoof() {
     shouldLogLengths = false;
 }
 
-function calcTrussVertexLists(length_ratio) {
+function calcTrussVertexLists_triangle(length_ratio) {
     var offset_cos = 1 * Math.PI;
     var offset_sin = 0 * Math.PI;
 
@@ -99,25 +100,78 @@ function calcTrussVertexLists(length_ratio) {
     wave_ratio_sin = Math.sin(length_ratio * 2 * Math.PI + offset_sin);
     wave_ratio_sin = map(wave_ratio_sin, -1, 1, 0, 1);
 
+    var top_x = 0 + truss_width * wave_ratio_cos;
+    var top_y = 0 - truss_min_height - truss_wave_height * wave_ratio_cos;
+
     return [
         [
             {   // lower left
                 x: 0,
                 y: 0,
             },
+            {   // top
+                x: top_x,
+                y: top_y,
+            },
             {   // lower right
-                x: 0 + truss_width,
+                x: truss_width,
                 y: 0,
             },
-            {   // top
-                x: 0 + truss_width * wave_ratio_cos,
-                y: 0 - truss_wave_height * wave_ratio_cos - truss_min_height,
-            },
-            {   // lower left to complete loop
+            {   // lower left
                 x: 0,
                 y: 0,
             },
-        ]
+        ],
+    ];
+}
+
+function calcTrussVertexLists_german(length_ratio) {
+    var offset_cos = 1 * Math.PI;
+    var offset_sin = 0 * Math.PI;
+
+    wave_ratio_cos = Math.cos(length_ratio * 2 * Math.PI + offset_cos);
+    wave_ratio_cos = map(wave_ratio_cos, -1, 1, 0, 1);
+    wave_ratio_sin = Math.sin(length_ratio * 2 * Math.PI + offset_sin);
+    wave_ratio_sin = map(wave_ratio_sin, -1, 1, 0, 1);
+
+    var top_x = 0 + truss_width * wave_ratio_cos;
+    var top_y = 0 - truss_min_height - truss_wave_height * wave_ratio_cos;
+
+    return [
+        [
+            {   // lower left
+                x: 0,
+                y: 0,
+            },
+            {   // top
+                x: top_x,
+                y: top_y,
+            },
+            {   // lower right
+                x: truss_width,
+                y: 0,
+            },
+        ],
+        [
+            {   // lower right
+                x: truss_width,
+                y: 0,
+            },
+            {   // upper left
+                x: 0.5 * top_x,
+                y: 0.5 * top_y,
+            },
+        ],
+        [
+            {   // lower left
+                x: 0,
+                y: 0,
+            },
+            {   // upper rigt
+                x: top_x + 0.5 * (truss_width - top_x),
+                y: 0.5 * top_y,
+            },
+        ],
     ];
 }
 
@@ -173,6 +227,9 @@ function keyTyped() {
   else if (key === 'l') {
     shouldLogLengths = true;
   }
+  else if (key === 'r') {
+    resetRotation();
+  }
 
   // uncomment to prevent any default behavior
   // return false;
@@ -191,4 +248,11 @@ function toggleGUI() {
     instructions.style.display = instructions.style.display === 'none' ? '' : 'none';
 
     showGUI = !showGUI;
+}
+
+function resetRotation() {
+    mouseDrag = {
+        x: 0,
+        y: 0,
+    };
 }
