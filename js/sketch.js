@@ -22,6 +22,12 @@ var roof_lengthMin     = -200;
 var roof_lengthMax     = 3000;
 var roof_lengthStep    = 10;
 
+var origin = {
+        x: - truss_width * 0.5,
+        y: truss_height * 1,
+        z: - roof_length * 0.5,
+    };
+
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
     fill(255);
@@ -49,17 +55,15 @@ function draw() {
 }
 
 function drawRoof() {
-    var origin = {
-        x: - truss_width * 0.5,
-        y: truss_height * 1,
-        z: - roof_length * 0.5,
-    };
-
     _.range(0, roof_length, truss_step)
         .map(function(offset_z, index, array) {
-            var truss_vertices = calcTrussVertices(index/array.length);
-            drawTruss(origin, truss_vertices, offset_z);
-            return offset_z;
+            return {
+                vertices: calcTrussVertices(index/array.length),
+                offset_z: offset_z,
+            };
+        })
+        .map(function(truss) {
+            drawTruss(origin, truss.vertices, truss.offset_z);
         });
 }
 
@@ -104,6 +108,10 @@ function drawTruss(origin, truss_vertices, offset_z) {
         origin.z + offset_z,
     )
     endShape();
+}
+
+function calc_vertex_lengths(truss_vertices) {
+    return 999;
 }
 
 // event handlers
