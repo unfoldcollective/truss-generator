@@ -71,16 +71,16 @@ function drawRoof() {
     _.range(0, roof_length, truss_step)
         .map(function(offset_z, index, array) {
             return {
-                vertices: calcTrussVertices(index/array.length),
+                vertex_lists: calcTrussVertexLists(index/array.length),
                 offset_z: offset_z,
             };
         })
         .map(function(truss) {
-            drawTruss(origin, truss.vertices, truss.offset_z);
+            drawTruss(origin, truss.vertex_lists, truss.offset_z);
             return truss;
         })
         .map(function(truss) {
-            return calcVertexLengths(truss.vertices);
+            return calcVertexLengths(truss.vertex_lists);
         })
         .map(function(vertex_lengths) {
             if (shouldLogLengths) {
@@ -90,7 +90,7 @@ function drawRoof() {
     shouldLogLengths = false;
 }
 
-function calcTrussVertices(length_ratio) {
+function calcTrussVertexLists(length_ratio) {
     var offset_cos = 1 * Math.PI;
     var offset_sin = 0 * Math.PI;
 
@@ -100,51 +100,64 @@ function calcTrussVertices(length_ratio) {
     wave_ratio_sin = map(wave_ratio_sin, -1, 1, 0, 1);
 
     return [
-        {   // lower left
-            x: 0,
-            y: 0,
-        },
-        {   // lower right
-            x: 0 + truss_width,
-            y: 0,
-        },
-        {   // top
-            x: 0 + truss_width * wave_ratio_cos,
-            y: 0 - truss_wave_height * wave_ratio_cos - truss_min_height,
-        },
+        [
+            {   // lower left
+                x: 0,
+                y: 0,
+            },
+            {   // lower right
+                x: 0 + truss_width,
+                y: 0,
+            },
+            {   // top
+                x: 0 + truss_width * wave_ratio_cos,
+                y: 0 - truss_wave_height * wave_ratio_cos - truss_min_height,
+            },
+            {   // lower left to complete loop
+                x: 0,
+                y: 0,
+            },
+        ]
     ];
 }
 
-function drawTruss(origin, truss_vertices, offset_z) {
+function drawTruss(origin, truss_vertex_lists, offset_z) {
+    truss_vertex_lists_3d = truss_vertex_lists.map(function(truss_vertex_list) {
+            return truss_vertex_list.map(function(vertex) {
+                return _.set(vertex, 'z', offset_z)
+            });
+        })
+        .map(function(truss_vertex_list_3d) {
+            draw_vertex_list(origin, truss_vertex_list_3d);
+        });    
+}
+
+function draw_vertex_list(origin, vertex_list) {
     beginShape();
-    for (var i = 0; i < truss_vertices.length; i++) {
-        vertex(
-            origin.x + truss_vertices[i].x,
-            origin.y + truss_vertices[i].y,
-            origin.z + offset_z,
-        )
-    }
-    // first vertex to complete loop
-    vertex(
-        origin.x + truss_vertices[0].x,
-        origin.y + truss_vertices[0].y,
-        origin.z + offset_z,
-    )
+        for (var i = 0; i < vertex_list.length; i++) {
+            vertex(
+                origin.x + vertex_list[i].x,
+                origin.y + vertex_list[i].y,
+                origin.z + vertex_list[i].z,
+            )
+        }
     endShape();
 }
 
-function calcVertexLengths(truss_vertices) {
-    return truss_vertices.map(function(vertex_cur, index, array) {
-        if (index == array.length - 1) {
-            var vertex_next = array[0]
-        }
-        else {
-            var vertex_next = array[index + 1]   
-        }
-        return dist(
-            vertex_cur.x, vertex_cur.y,
-            vertex_next.x, vertex_next.y
-        );
+function calcVertexLengths(truss_vertex_lists) {
+    return truss_vertex_lists.map(function(truss_vertex_list) {
+        return truss_vertex_list.map(function(vertex_cur, index, array) {
+            if (index == array.length - 1) {
+                var vertex_next = array[0]
+            }
+            else {
+                var vertex_next = array[index + 1]   
+            }
+            return dist(
+                vertex_cur.x, vertex_cur.y,
+                vertex_next.x, vertex_next.y
+            );
+        });
     });
 }
 
