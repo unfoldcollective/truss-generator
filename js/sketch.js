@@ -15,11 +15,6 @@ var truss_min_heightMin   = 0;
 var truss_min_heightMax   = 300;
 var truss_min_heightStep  = 5;
 
-var truss_top_ratio       = 0.5;
-var truss_top_ratioMin    = -1;
-var truss_top_ratioMax    = 2;
-var truss_top_ratioStep   = 0.01;
-
 var truss_step            = 100;
 var truss_stepMin         = 10;
 var truss_stepMax         = 1000;
@@ -47,7 +42,6 @@ function setup() {
         'roof_length',
         'truss_wave_height',
         'truss_min_height',
-        'truss_top_ratio',
         'truss_step',
     );
 }
@@ -59,8 +53,10 @@ function draw() {
     sphere(5);
     fill(255);
     
-    rotateZ(map(mouseX, 0, width, -0.5 * Math.PI, 0.5 * Math.PI));
-    rotateX(map(mouseY, 0, height, -0.5 * Math.PI, 0.5 * Math.PI));
+    if (mouseIsPressed && keyIsPressed) {
+        rotateZ(map(mouseX, 0, width, -0.5 * Math.PI, 0.5 * Math.PI));
+        rotateX(map(mouseY, 0, height, -0.5 * Math.PI, 0.5 * Math.PI));
+    }
     
     drawRoof();
 }
