@@ -1,34 +1,42 @@
 var gui;
 
-var truss_width         = 250;
-var truss_widthMin      = -200;
-var truss_widthMax      = 1000;
-var truss_widthStep     = 10;
-var truss_height        = 65;
-var truss_heightMin     = 0;
-var truss_heightMax     = 300;
-var truss_heightStep    = 5;
-var truss_top_ratio     = 0.5;
-var truss_top_ratioMin  = -1;
-var truss_top_ratioMax  = 2;
-var truss_top_ratioStep = 0.01;
-var truss_step          = 50;
-var truss_stepMin       = 10;
-var truss_stepMax       = 1000;
-var truss_stepStep      = 10;
+var truss_width           = 250;
+var truss_widthMin        = -200;
+var truss_widthMax        = 1000;
+var truss_widthStep       = 10;
 
-var roof_length         = 500;
-var roof_lengthMin      = -200;
-var roof_lengthMax      = 3000;
-var roof_lengthStep     = 100;
+var truss_wave_height     = 65;
+var truss_wave_heightMin  = 0;
+var truss_wave_heightMax  = 300;
+var truss_wave_heightStep = 5;
 
-var shouldLogLengths    = false;
+var truss_min_height      = 100;
+var truss_min_heightMin   = 0;
+var truss_min_heightMax   = 300;
+var truss_min_heightStep  = 5;
+
+var truss_top_ratio       = 0.5;
+var truss_top_ratioMin    = -1;
+var truss_top_ratioMax    = 2;
+var truss_top_ratioStep   = 0.01;
+
+var truss_step            = 100;
+var truss_stepMin         = 10;
+var truss_stepMax         = 1000;
+var truss_stepStep        = 10;
+
+var roof_length           = 1500;
+var roof_lengthMin        = -200;
+var roof_lengthMax        = 3000;
+var roof_lengthStep       = 100;
+
+var shouldLogLengths      = false;
 
 var origin = {
-        x: - truss_width * 0.5,
-        y: truss_height * 1,
-        z: - roof_length * 0.5,
-    };
+    x: - truss_width * 0.5,
+    y: truss_wave_height * 1,
+    z: - roof_length * 0.5,
+};
 
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
@@ -37,7 +45,8 @@ function setup() {
     gui.addGlobals(
         'truss_width',
         'roof_length',
-        'truss_height',
+        'truss_wave_height',
+        'truss_min_height',
         'truss_top_ratio',
         'truss_step',
     );
@@ -99,7 +108,7 @@ function calcTrussVertices(length_ratio) {
         },
         {   // top
             x: 0 + truss_width * wave_ratio_cos,
-            y: 0 - truss_height * wave_ratio_cos - 100,
+            y: 0 - truss_wave_height * wave_ratio_cos - truss_min_height,
         },
     ];
 }
