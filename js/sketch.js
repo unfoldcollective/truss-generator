@@ -21,6 +21,8 @@ function setup() {
         min_height_range: [0,300],
         wave_height: 65,
         wave_height_range: [0,300],
+        type: ['scissor', 'triangle'],
+        type_selection: 'scissor',
     }
     roof_params = {
         length: 1500,
@@ -33,6 +35,7 @@ function setup() {
         label: "Truss Parameters",
         })
         .addGroup()
+            .addSelect(truss_params, 'type', {target: 'type_selection'})
             .addSlider(truss_params, 'width',       'width_range')
             .addSlider(truss_params, 'min_height',  'min_height_range')
             .addSlider(truss_params, 'wave_height', 'wave_height_range')
@@ -70,8 +73,7 @@ function drawRoof() {
     _.range(0, roof_params.length, roof_params.step)
         .map(function(offset_z, index, array) {
             return {
-                vertex_lists: calcTrussVertexLists_scissor(index/array.length),
-                // vertex_lists: calcTrussVertexLists_triangle(index/array.length),
+                vertex_lists: getVertexListsByType(truss_params.type_selection, index/array.length),
                 offset_z: offset_z,
             };
         })
@@ -88,6 +90,26 @@ function drawRoof() {
             }
         });
     shouldLogLengths = false;
+}
+
+function getVertexListsByType(type, ratio) {
+  var vertex_lists;
+  var truss_types = {
+    'scissor': function () {
+      vertex_lists = calcTrussVertexLists_scissor(ratio);
+    },
+    'triangle': function () {
+      vertex_lists = calcTrussVertexLists_triangle(ratio);
+    },
+    'default': function () {
+      vertex_lists = calcTrussVertexLists_triangle(ratio);
+    }
+  };
+    
+  // invoke it
+  (truss_types[type] || truss_types['default'])();
+
+  return vertex_lists;
 }
 
 function calcTrussVertexLists_triangle(length_ratio) {
