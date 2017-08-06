@@ -5,9 +5,9 @@ var truss_widthMin      = -200;
 var truss_widthMax      = 1000;
 var truss_widthStep     = 10;
 var truss_height        = 65;
-var truss_heightMin     = -250;
-var truss_heightMax     = 500;
-var truss_heightStep    = 10;
+var truss_heightMin     = 0;
+var truss_heightMax     = 300;
+var truss_heightStep    = 5;
 var truss_top_ratio     = 0.5;
 var truss_top_ratioMin  = -1;
 var truss_top_ratioMax  = 2;
@@ -20,7 +20,7 @@ var truss_stepStep      = 10;
 var roof_length         = 500;
 var roof_lengthMin      = -200;
 var roof_lengthMax      = 3000;
-var roof_lengthStep     = 10;
+var roof_lengthStep     = 100;
 
 var shouldLogLengths    = false;
 
