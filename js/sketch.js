@@ -1,4 +1,5 @@
 var gui;
+var showGUI = true;
 
 var truss_width           = 250;
 var truss_widthMin        = -200;
@@ -149,7 +150,7 @@ function windowResized() {
 
 function keyTyped() {
   if (key === 'g') {
-    // toggleGUIs();
+    toggleGUI();
   }
   else if (key === 'l') {
     shouldLogLengths = true;
@@ -159,6 +160,10 @@ function keyTyped() {
   // return false;
 }
 
-function toggleGUIs() {
-    guis.map(value => value.toggleVisibility() );
+function toggleGUI() {
+    gui.toggleVisibility()
+    var instructions = document.querySelector("#instructions");
+    instructions.style.display = instructions.style.display === 'none' ? '' : 'none';
+
+    showGUI = !showGUI;
 }
