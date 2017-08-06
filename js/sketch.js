@@ -1,52 +1,51 @@
-var gui;
 var showGUI = true;
 
+var controlKit;
+var truss_params;
+var roof_params;
+
 var mouseDrag;
-
-var truss_width           = 250;
-var truss_widthMin        = -200;
-var truss_widthMax        = 1000;
-var truss_widthStep       = 10;
-
-var truss_wave_height     = 65;
-var truss_wave_heightMin  = 0;
-var truss_wave_heightMax  = 300;
-var truss_wave_heightStep = 5;
-
-var truss_min_height      = 100;
-var truss_min_heightMin   = 0;
-var truss_min_heightMax   = 300;
-var truss_min_heightStep  = 5;
-
-var truss_step            = 100;
-var truss_stepMin         = 10;
-var truss_stepMax         = 1000;
-var truss_stepStep        = 10;
-
-var roof_length           = 1500;
-var roof_lengthMin        = -200;
-var roof_lengthMax        = 3000;
-var roof_lengthStep       = 100;
-
 var shouldLogLengths      = false;
 
-var origin = {
-    x: - truss_width * 0.5,
-    y: truss_wave_height * 1,
-    z: - roof_length * 0.5,
-};
+var origin;
 
 function setup() {
     createCanvas(windowWidth, windowHeight, WEBGL);
     fill(255);
-    gui  = createGui('Truss');
-    gui.addGlobals(
-        'truss_width',
-        'roof_length',
-        'truss_wave_height',
-        'truss_min_height',
-        'truss_step',
-    );
+
+    // init ControlKit
+    truss_params = {
+        width: 250,
+        width_range: [0,1000],
+        min_height: 100,
+        min_height_range: [0,300],
+        wave_height: 65,
+        wave_height_range: [0,300],
+    }
+    roof_params = {
+        length: 1500,
+        length_range: [0, 3000],
+        step: 100,
+        step_range: [10, 300],
+    }
+    controlKit = new ControlKit();
+    controlKit.addPanel({
+        label: "Truss Parameters",
+        })
+        .addGroup()
+            .addSlider(truss_params, 'width',       'width_range')
+            .addSlider(truss_params, 'min_height',  'min_height_range')
+            .addSlider(truss_params, 'wave_height', 'wave_height_range')
+        .addGroup()
+            .addSlider(roof_params,  'length',      'length_range')
+            .addSlider(roof_params,  'step',        'step_range')
+
+    // set start params
+    origin = {
+        x: - truss_params.width * 0.5,
+        y: truss_params.wave_height * 1,
+        z: - roof_params.length * 0.5,
+    };
 
     mouseDrag = {
         x: 0,
@@ -68,7 +67,7 @@ function draw() {
 }
 
 function drawRoof() {
-    _.range(0, roof_length, truss_step)
+    _.range(0, roof_params.length, roof_params.step)
         .map(function(offset_z, index, array) {
             return {
                 vertex_lists: calcTrussVertexLists_scissor(index/array.length),
@@ -100,8 +99,8 @@ function calcTrussVertexLists_triangle(length_ratio) {
     wave_ratio_sin = Math.sin(length_ratio * 2 * Math.PI + offset_sin);
     wave_ratio_sin = map(wave_ratio_sin, -1, 1, 0, 1);
 
-    var top_x = 0 + truss_width * wave_ratio_cos;
-    var top_y = 0 - truss_min_height - truss_wave_height * wave_ratio_cos;
+    var top_x = 0 + truss_params.width * wave_ratio_cos;
+    var top_y = 0 - truss_params.min_height - truss_params.wave_height * wave_ratio_cos;
 
     return [
         [
@@ -114,7 +113,7 @@ function calcTrussVertexLists_triangle(length_ratio) {
                 y: top_y,
             },
             {   // lower right
-                x: truss_width,
+                x: truss_params.width,
                 y: 0,
             },
             {   // lower left
@@ -134,8 +133,8 @@ function calcTrussVertexLists_scissor(length_ratio) {
     wave_ratio_sin = Math.sin(length_ratio * 2 * Math.PI + offset_sin);
     wave_ratio_sin = map(wave_ratio_sin, -1, 1, 0, 1);
 
-    var top_x = 0 + truss_width * wave_ratio_cos;
-    var top_y = 0 - truss_min_height - truss_wave_height * wave_ratio_cos;
+    var top_x = 0 + truss_params.width * wave_ratio_cos;
+    var top_y = 0 - truss_params.min_height - truss_params.wave_height * wave_ratio_cos;
 
     return [
         [
@@ -148,13 +147,13 @@ function calcTrussVertexLists_scissor(length_ratio) {
                 y: top_y,
             },
             {   // lower right
-                x: truss_width,
+                x: truss_params.width,
                 y: 0,
             },
         ],
         [
             {   // lower right
-                x: truss_width,
+                x: truss_params.width,
                 y: 0,
             },
             {   // upper left
@@ -168,7 +167,7 @@ function calcTrussVertexLists_scissor(length_ratio) {
                 y: 0,
             },
             {   // upper rigt
-                x: top_x + 0.5 * (truss_width - top_x),
+                x: top_x + 0.5 * (truss_params.width - top_x),
                 y: 0.5 * top_y,
             },
         ],
@@ -243,10 +242,10 @@ function mouseDragged() {
 }
 
 function toggleGUI() {
-    gui.toggleVisibility()
-    var instructions = document.querySelector("#instructions");
-    instructions.style.display = instructions.style.display === 'none' ? '' : 'none';
-
+    var instructionsElem = document.querySelector("#instructions");
+    var controlKitElem   = document.querySelector("#controlKit");
+    instructionsElem.style.display = instructionsElem.style.display === 'none' ? '' : 'none';
+    controlKitElem.style.display   = controlKitElem.style.display === 'none' ? '' : 'none';
     showGUI = !showGUI;
 }
 
