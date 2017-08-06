@@ -57,9 +57,9 @@ function setup() {
 function draw() {
     background(0);
 
-    fill(0,255,0);
-    sphere(5);
-    fill(255);
+    // fill(0,255,0);
+    // sphere(5);
+    // fill(255);
     
     rotateY(map(mouseDrag.x, -0.5 * width, 0.5 * width, -0.5 * Math.PI, 0.5 * Math.PI));
     rotateX(map(mouseDrag.y, -0.5 * height, 0.5 * height, -0.5 * Math.PI, 0.5 * Math.PI));
@@ -71,7 +71,7 @@ function drawRoof() {
     _.range(0, roof_length, truss_step)
         .map(function(offset_z, index, array) {
             return {
-                vertex_lists: calcTrussVertexLists_german(index/array.length),
+                vertex_lists: calcTrussVertexLists_scissor(index/array.length),
                 // vertex_lists: calcTrussVertexLists_triangle(index/array.length),
                 offset_z: offset_z,
             };
@@ -125,7 +125,7 @@ function calcTrussVertexLists_triangle(length_ratio) {
     ];
 }
 
-function calcTrussVertexLists_german(length_ratio) {
+function calcTrussVertexLists_scissor(length_ratio) {
     var offset_cos = 1 * Math.PI;
     var offset_sin = 0 * Math.PI;
 
