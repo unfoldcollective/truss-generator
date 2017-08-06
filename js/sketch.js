@@ -1,13 +1,13 @@
 var gui;
 
-var truss_width         = 300;
+var truss_width         = 250;
 var truss_widthMin      = -200;
 var truss_widthMax      = 1000;
-var truss_widthStep     = 1;
-var truss_height        = 150;
+var truss_widthStep     = 10;
+var truss_height        = 65;
 var truss_heightMin     = -250;
 var truss_heightMax     = 500;
-var truss_heightStep    = 1;
+var truss_heightStep    = 10;
 var truss_top_ratio     = 0.5;
 var truss_top_ratioMin  = -1;
 var truss_top_ratioMax  = 2;
@@ -17,10 +17,12 @@ var truss_stepMin       = 10;
 var truss_stepMax       = 1000;
 var truss_stepStep      = 10;
 
-var roof_length        = 500;
-var roof_lengthMin     = -200;
-var roof_lengthMax     = 3000;
-var roof_lengthStep    = 10;
+var roof_length         = 500;
+var roof_lengthMin      = -200;
+var roof_lengthMax      = 3000;
+var roof_lengthStep     = 10;
+
+var shouldLogLengths    = false;
 
 var origin = {
         x: - truss_width * 0.5,
@@ -64,7 +66,17 @@ function drawRoof() {
         })
         .map(function(truss) {
             drawTruss(origin, truss.vertices, truss.offset_z);
+            return truss;
+        })
+        .map(function(truss) {
+            return calcVertexLengths(truss.vertices);
+        })
+        .map(function(vertex_lengths) {
+            if (shouldLogLengths) {
+                console.log(vertex_lengths);
+            }
         });
+    shouldLogLengths = false;
 }
 
 function calcTrussVertices(length_ratio) {
@@ -110,8 +122,19 @@ function drawTruss(origin, truss_vertices, offset_z) {
     endShape();
 }
 
-function calc_vertex_lengths(truss_vertices) {
-    return 999;
+function calcVertexLengths(truss_vertices) {
+    return truss_vertices.map(function(vertex_cur, index, array) {
+        if (index == array.length - 1) {
+            var vertex_next = array[0]
+        }
+        else {
+            var vertex_next = array[index + 1]   
+        }
+        return dist(
+            vertex_cur.x, vertex_cur.y,
+            vertex_next.x, vertex_next.y
+        );
+    });
 }
 
 // event handlers
@@ -121,8 +144,12 @@ function windowResized() {
 
 function keyTyped() {
   if (key === 'g') {
-    toggleGUIs();
+    // toggleGUIs();
   }
+  else if (key === 'l') {
+    shouldLogLengths = true;
+  }
+
   // uncomment to prevent any default behavior
   // return false;
 }
