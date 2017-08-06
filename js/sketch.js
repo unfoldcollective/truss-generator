@@ -1,6 +1,8 @@
 var gui;
 var showGUI = true;
 
+var mouseDrag;
+
 var truss_width           = 250;
 var truss_widthMin        = -200;
 var truss_widthMax        = 1000;
@@ -45,6 +47,11 @@ function setup() {
         'truss_min_height',
         'truss_step',
     );
+
+    mouseDrag = {
+        x: 0,
+        y: 0,
+    };
 }
 
 function draw() {
@@ -54,10 +61,8 @@ function draw() {
     sphere(5);
     fill(255);
     
-    if (mouseIsPressed && keyIsPressed) {
-        rotateZ(map(mouseX, 0, width, -0.5 * Math.PI, 0.5 * Math.PI));
-        rotateX(map(mouseY, 0, height, -0.5 * Math.PI, 0.5 * Math.PI));
-    }
+    rotateZ(map(mouseDrag.x, -0.5 * width, 0.5 * width, -0.5 * Math.PI, 0.5 * Math.PI));
+    rotateX(map(mouseDrag.y, -0.5 * height, 0.5 * height, -0.5 * Math.PI, 0.5 * Math.PI));
     
     drawRoof();
 }
@@ -158,6 +163,13 @@ function keyTyped() {
 
   // uncomment to prevent any default behavior
   // return false;
+}
+
+function mouseDragged() {
+    if (keyIsPressed && keyCode == SHIFT) {
+        mouseDrag.x += mouseX - pmouseX;
+        mouseDrag.y += mouseY - pmouseY;
+    }
 }
 
 function toggleGUI() {
