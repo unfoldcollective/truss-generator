@@ -4,7 +4,7 @@ var truss_width         = 300;
 var truss_widthMin      = -200;
 var truss_widthMax      = 1000;
 var truss_widthStep     = 1;
-var truss_height        = 250;
+var truss_height        = 150;
 var truss_heightMin     = -250;
 var truss_heightMax     = 500;
 var truss_heightStep    = 1;
@@ -59,8 +59,14 @@ function drawRoof() {
 }
 
 function drawTruss(origin, offset_z, ratio) {
-    this_truss_top_ratio = Math.cos(ratio * 2 * Math.PI);
-    this_truss_top_ratio = map(this_truss_top_ratio, -1, 1, 0, 1);
+    var offset_cos = 1 * Math.PI;
+    var offset_sin = 0 * Math.PI;
+
+    wave_ratio_cos = Math.cos(ratio * 2 * Math.PI + offset_cos);
+    wave_ratio_cos = map(wave_ratio_cos, -1, 1, 0, 1);
+    
+    wave_ratio_sin = Math.sin(ratio * 2 * Math.PI + offset_sin);
+    wave_ratio_sin = map(wave_ratio_sin, -1, 1, 0, 1);
 
     beginShape();
         vertex( // lower left
@@ -74,8 +80,8 @@ function drawTruss(origin, offset_z, ratio) {
             origin.z + offset_z
         );
         vertex( // top
-            origin.x + truss_width * this_truss_top_ratio,
-            origin.y - truss_height,
+            origin.x + truss_width * wave_ratio_cos,
+            origin.y - truss_height * wave_ratio_cos - 100,
             origin.z + offset_z
         );
         vertex( // lower left
